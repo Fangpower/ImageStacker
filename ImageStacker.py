@@ -10,9 +10,9 @@ import glob
 background = []
 backgroundFiles = glob.glob("Background/*.png")
 for myFile in backgroundFiles:
-    image = cv2.imread(myFile)
+    image = Image.open(myFile)
     background.append(image)
-backgroundImg = Image.fromarray((background[randint(0, len(background)) - 1])).convert('RGBA')
+backgroundImg = background[randint(0, len(background)) - 1]
 
 #This function removes all white from images to make sure they are transparent
 def RemoveWhite(datas):
@@ -29,22 +29,23 @@ def AddLayer(filePath):
     layer = []
     layerFiles = glob.glob(filePath)
     for myFile in layerFiles:
-        image = cv2.imread(myFile)
-        imgRGB = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        layer.append(imgRGB)
-    newImg = Image.fromarray(layer[randint(0, len(layer) - 1)]).convert('RGBA')
+        image = Image.open(myFile).convert('RGBA')
+        #imgRGB = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        layer.append(image)
+
+    newImg = layer[randint(0, len(layer) - 1)]
     newImg.putdata(RemoveWhite(newImg.getdata()))
-    newImg = newImg.filter(ImageFilter.SMOOTH_MORE)
+    #newImg = newImg.filter(ImageFilter.SMOOTH_MORE)
     return Image.alpha_composite(backgroundImg, newImg)
 
-for x in range(1):
-    bodyImg = Image.open("Body/strawberrySam_body-1.png").convert('RGBA')
+for x in range(25):
+    bodyImg = Image.open("Body/PNGBODY.png").convert('RGBA')
     backgroundImg = Image.alpha_composite(backgroundImg, bodyImg)
 
-    #backgroundImg = AddLayer("Eyes/*.png")
+    backgroundImg = AddLayer("Eyes/*.png")
     backgroundImg = AddLayer("Mouths/*.png")
 
     #backgroundImg.show()
     backgroundImg.save(str(x) + '.png')
-    backgroundImg = Image.fromarray((background[randint(0, len(background)) - 1])).convert('RGBA')
+    backgroundImg = background[randint(0, len(background)) - 1]
 
