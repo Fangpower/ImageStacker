@@ -6,6 +6,8 @@ from random import seed
 from random import randint
 import glob
 
+saveFilePath = "C:\\Users\\Mikey\\OneDrive\\strawberrySam\\UptoDateFinalImages\\"
+#Using Image.show() produces higher quality images vs. cv2.imread()
 #Get the background colour image
 background = []
 backgroundFiles = glob.glob("Background/*.png")
@@ -38,14 +40,17 @@ def AddLayer(filePath):
     #newImg = newImg.filter(ImageFilter.SMOOTH_MORE)
     return Image.alpha_composite(backgroundImg, newImg)
 
-for x in range(25):
-    bodyImg = Image.open("Body/PNGBODY.png").convert('RGBA')
+#This loops through the image creation and shows the images and or saves them
+for x in range(10):
+    bodyImg = Image.open("Body/body@3x.png").convert('RGBA')
     backgroundImg = Image.alpha_composite(backgroundImg, bodyImg)
 
     backgroundImg = AddLayer("Eyes/*.png")
     backgroundImg = AddLayer("Mouths/*.png")
 
-    #backgroundImg.show()
-    backgroundImg.save(str(x) + '.png')
+    backgroundImg.show()
+    #backgroundImg.save(saveFilePath + str(x + 1) + '.png')
+
     backgroundImg = background[randint(0, len(background)) - 1]
+    #print(x + 1)
 
