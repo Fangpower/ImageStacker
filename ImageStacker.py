@@ -5,6 +5,7 @@ import cv2
 from random import seed
 from random import randint
 import glob
+import time
 
 saveFilePath = "C:\\Users\\Mikey\\OneDrive\\strawberrySam\\UptoDateFinalImages\\"
 #Using Image.show() produces higher quality images vs. cv2.imread()
@@ -29,28 +30,26 @@ def RemoveWhite(datas):
 #This funtion gets the file path, and a random image, then adds it to the background image.
 def AddLayer(filePath):
     layer = []
-    layerFiles = glob.glob(filePath)
-    for myFile in layerFiles:
+    for myFile in glob.glob(filePath + '/*.png'):
         image = Image.open(myFile).convert('RGBA')
-        #imgRGB = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         layer.append(image)
-
     newImg = layer[randint(0, len(layer) - 1)]
-    newImg.putdata(RemoveWhite(newImg.getdata()))
-    #newImg = newImg.filter(ImageFilter.SMOOTH_MORE)
+    #newImg.putdata(RemoveWhite(newImg.getdata()))
     return Image.alpha_composite(backgroundImg, newImg)
 
 #This loops through the image creation and shows the images and or saves them
-for x in range(10):
-    bodyImg = Image.open("Body/body@3x.png").convert('RGBA')
+bodyImg = Image.open("Body/body@3x.png").convert('RGBA')
+
+for x in range(1):
+    startTime = time.time()
     backgroundImg = Image.alpha_composite(backgroundImg, bodyImg)
 
-    backgroundImg = AddLayer("Eyes/*.png")
-    backgroundImg = AddLayer("Mouths/*.png")
+    backgroundImg = AddLayer("Eyes")
+    backgroundImg = AddLayer("Mouths")
 
     backgroundImg.show()
-    #backgroundImg.save(saveFilePath + str(x + 1) + '.png')
+    #backgroundImg.save(saveFilePath + str(x + 100) + '.png')
 
     backgroundImg = background[randint(0, len(background)) - 1]
-    #print(x + 1)
+    print("Photo " + str(x + 1) + " took " + str(time.time() - startTime), "to make.")
 
