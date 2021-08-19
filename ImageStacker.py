@@ -11,7 +11,7 @@ saveFilePath = "C:\\Users\\Mikey\\OneDrive\\strawberrySam\\UptoDateFinalImages\\
 #Using Image.show() produces higher quality images vs. cv2.imread()
 #Get the background colour image
 background = []
-backgroundFiles = glob.glob("Background/*.png")
+backgroundFiles = glob.glob("C:\\Users\\Mikey\\OneDrive\\strawberrySam\\background/*.png")
 for myFile in backgroundFiles:
     image = Image.open(myFile)
     background.append(image)
@@ -38,14 +38,14 @@ def AddLayer(filePath):
     return Image.alpha_composite(backgroundImg, newImg)
 
 #This loops through the image creation and shows the images and or saves them
-bodyImg = Image.open("Body/body@3x.png").convert('RGBA')
+bodyImg = Image.open("C:\\Users\\Mikey\\OneDrive\\strawberrySam\\body\\body@3x.png").convert('RGBA')
 
-for x in range(1):
+for x in range(10):
     startTime = time.time()
     backgroundImg = Image.alpha_composite(backgroundImg, bodyImg)
 
-    backgroundImg = AddLayer("Eyes")
-    backgroundImg = AddLayer("Mouths")
+    backgroundImg = AddLayer("C:\\Users\\Mikey\\OneDrive\\strawberrySam\\eyes")
+    backgroundImg = AddLayer("C:\\Users\\Mikey\\OneDrive\\strawberrySam\\mouths")
 
     backgroundImg.show()
     #backgroundImg.save(saveFilePath + str(x + 100) + '.png')
