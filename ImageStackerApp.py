@@ -70,6 +70,10 @@ class ImageStackerApp:
         self.allPowerfulList = [[], [], [], [], [], [], [], [], []]
         self.size = (0, 0)
 
+        self.familyName = self.CreateFamilyInput()
+        self.nameNFT = self.CreateNameInput()
+        self.walletID = self.CreateWalletInput()
+
 
     #All these functions are the different frames.
     def createLeftFrame(self):
@@ -128,6 +132,24 @@ class ImageStackerApp:
         error = tk.Label(errorWindow, text=message, bg=PLATINUM, fg=SUNGLOW, font=LARGEFONT)
         error.pack()
 
+    def CreateFamilyInput(self):
+        label = tk.Entry(self.bgFileFrame, bg=SUNGLOW, font=FONTTWO, justify="center", relief="flat", width=15)
+        label.pack(pady=2.5)
+        label.insert(0, "Family Name")
+        return label
+
+    def CreateNameInput(self):
+        label = tk.Entry(self.bgFileFrame, bg=SUNGLOW, font=FONTTWO, justify="center", relief="flat", width=15)
+        label.pack(pady=2.5)
+        label.insert(0, "Name")
+        return label
+
+    def CreateWalletInput(self):
+        label = tk.Entry(self.bgFileFrame, bg=SUNGLOW, font=FONTTWO, justify="center", relief="flat", width=15)
+        label.pack(pady=2.5)
+        label.insert(0, "Wallet ID")
+        return label
+
     #This is the function for the background file path.
     def browseFiles(self, button, filetype, isLayerButton):
         filename = filedialog.askdirectory(initialdir = self.rootFilePath, title = "Select a File")
@@ -185,7 +207,7 @@ class ImageStackerApp:
 
     #Start of layer functions.
     def findLayerCount(self):
-        if len(self.layers) < 8:
+        if len(self.layers) < 6:
             self.createLayerInputs()
 
     def removeLayerInput(self):
@@ -382,19 +404,22 @@ class ImageStackerApp:
 
     def CreateJson(self, num):
         amount = str(self.imageCount.get())
+        wallet = self.walletID.get()
+        family = self.familyName.get()
+        name = self.nameNFT.get()
         print(amount)
         newJson = {
-            "name": "Number #" + str(num + 1),
+            "name": name + " " + str(num+1),
             "symbol": "NB",
             "description":"Collection of " + amount + " images. This is #" + str(num + 1) + "/" + amount,
             "seller_fee_basis_points": str(500),
             "image": str((num + 1)) + ".png",
             #"attributes": self.attributesList,
             "properties": {
-                "creators": [{"address": "WalletNum", "share": str(100)}],
+                "creators": [{"address": wallet, "share": str(100)}],
                 "files": [{"uri": str((num + 1)) + ".png", "type": "image/png"}]
             },
-            "collection": {"name": "Name Here", "family": "Family Name"}
+            "collection": {"name": name, "family": family}
         }
         jsonString = json.dumps(newJson)
         jsonFile = open(self.saveFilePath + "/" + str(num + 1) + '.json', "w")
