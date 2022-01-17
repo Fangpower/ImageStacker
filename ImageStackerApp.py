@@ -1,3 +1,4 @@
+import os.path
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import *
@@ -5,11 +6,10 @@ from PIL import Image, ImageTk
 from random import *
 import glob
 import time
-#import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import yagmail
-import cv2
+import json
 
 BLUE = "#404040"
 SUNGLOW = "#b3b3b3"
@@ -65,6 +65,7 @@ class ImageStackerApp:
         self.showImages = False
         self.showGraph = False
         self.removeWhite = False
+        self.attributesList = []
 
         self.allPowerfulList = [[], [], [], [], [], [], [], [], []]
         self.size = (0, 0)
@@ -251,12 +252,18 @@ class ImageStackerApp:
     def Addbackground(self):
         background = self.allPowerfulList[0]
         newBg = Image.open(background[randrange(len(background))])
+        filepath = newBg.filename
+        filename = os.path.basename(filepath)
+        self.attributesList.append({"trait_type":"Background", "value":filename})
         return newBg
 
     def AddLayer(self, num, backgroundImg):
         layer = self.allPowerfulList[num+1]
-        newImg = Image.open(layer[randrange(len(layer))]).resize((1500, 1500))
-        return Image.alpha_composite(backgroundImg, newImg)
+        newImg = Image.open(layer[randrange(len(layer))])
+        filepath = newImg.filename
+        filename = filepath.split(os.path.sep)[-2]
+        self.attributesList.append({"trait_type":filename.split("/")[-1],"value":filepath.split(os.path.sep)[-1]})
+        return Image.alpha_composite(backgroundImg, newImg.resize((1500,1500)))
 
     def CreatePercent(self):
         label = tk.Label(self.rightFrame, text=U'\u2716', bg=PLATINUM, fg=SUNGLOW, font=FONT)
@@ -304,6 +311,7 @@ class ImageStackerApp:
                 stuff.destroy()
         max = intEntry
         for i in range(intEntry):
+            self.attributesList = []
             startTime = time.time()
             self.percent.configure(text=str(int(((i+1)/max)*100)) + "%")
             #Add the background
@@ -328,6 +336,7 @@ class ImageStackerApp:
             try:
                 if self.saveFilePath != "":
                     backgroundImg.save(self.saveFilePath + "/" + str(i + 1) + '.png')
+                    self.CreateJson(i)
             except Exception as e:
                 #self.ErrorWindow("Save Failed")
                 print(e)
@@ -336,7 +345,6 @@ class ImageStackerApp:
             count.append(i)
 
             self.window.update()
-            #backgroundImg.close()
         self.percent.configure(text=U'\u2714')
 
         if self.showGraph == True:
@@ -371,6 +379,27 @@ class ImageStackerApp:
         for t in times:
             total += t
         print(int(total*100)/100)
+
+    def CreateJson(self, num):
+        amount = str(self.imageCount.get())
+        print(amount)
+        newJson = {
+            "name": "Number #" + str(num + 1),
+            "symbol": "NB",
+            "description":"Collection of " + amount + " images. This is #" + str(num + 1) + "/" + amount,
+            "seller_fee_basis_points": str(500),
+            "image": str((num + 1)) + ".png",
+            #"attributes": self.attributesList,
+            "properties": {
+                "creators": [{"address": "WalletNum", "share": str(100)}],
+                "files": [{"uri": str((num + 1)) + ".png", "type": "image/png"}]
+            },
+            "collection": {"name": "Name Here", "family": "Family Name"}
+        }
+        jsonString = json.dumps(newJson)
+        jsonFile = open(self.saveFilePath + "/" + str(num + 1) + '.json', "w")
+        jsonFile.write(jsonString)
+        jsonFile.close()
 
     def findTime(self, time):
         if time > 120:
